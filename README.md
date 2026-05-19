@@ -14,15 +14,25 @@
 
 ## 📋 安裝前準備
 
-在執行腳本之前，請確保你已完成以下準備：
+在執行安裝腳本之前，請確保你已完成以下準備：
 
-### 1. 安裝 Node.js 與 npm
-本工具依賴於 Node.js 環境。請確認你的電腦已安裝 npm：
+### 1. 安裝 Node.js v20+ 與 npm (必備)
+本工具要求 **Node.js v20.0.0 或以上版本** 才能穩定運行。
+
+**如果你尚未安裝或版本過低，請在終端機執行以下指令安裝 v20 (適用於 Ubuntu/Debian/WSL)：**
 ```bash
-node -v
-npm -v
+# 1. 下載並執行 NodeSource 安裝腳本 (設定 v20 倉庫)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+
+# 2. 安裝 Node.js (包含 npm)
+sudo apt-get install -y nodejs
 ```
-*若未安裝，請至 [nodejs.org](https://nodejs.org/) 下載安裝。*
+
+**驗證安裝是否成功：**
+```bash
+node -v  # 應顯示 v20.x.x
+npm -v   # 應顯示版本號
+```
 
 ### 2. 獲取 Google AI Studio API Key
 你需要一個 API Key 來驅動模型：
@@ -35,7 +45,7 @@ npm -v
 
 ## ⚡ 快速安裝 (推薦)
 
-為了確保互動式輸入能正常運作，請直接在終端機執行以下組合指令：
+如果你已經完成上述準備，可以直接在終端機執行以下組合指令：
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/setup_gemma.sh -o setup_gemma.sh && chmod +x setup_gemma.sh && ./setup_gemma.sh
@@ -54,7 +64,7 @@ curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/s
 打開終端機 (Terminal)，切換到腳本所在目錄，執行以下指令：
 
 ```bash
-# 1. 給予執行權權
+# 1. 給予執行權限
 chmod +x setup_gemma.sh
 
 # 2. 以「普通使用者」身份啟動安裝程式 (請勿使用 sudo 啟動整個腳本)
@@ -93,7 +103,7 @@ claude
 ## ❓ 常見問題 (FAQ)
 
 **Q: 我可以直接用 `sudo ./setup_gemma.sh` 執行嗎？**
-A: **強烈不建議！** 請以普通使用者身份執行。腳本內部會根據需要自動請求 `sudo` 權限來安裝工具，這樣可以確保你的設定檔擁有權正確，避免後後出現 `Permission Denied` 錯誤。
+A: **強烈不建議！** 請以普通使用者身份執行。腳本內部會根據需要自動請求 `sudo` 權限來安裝工具，這樣可以確保你的設定檔擁有權正確，避免後續出現 `Permission Denied` 錯誤。
 
 **Q: 我需要重新啟動終端機嗎？**
 A: 不需要。腳本最後會自動激活環境。如果你開啟新的視窗發現 `claude` 指令失效，請執行 `source ~/.zshrc` (或 `.bashrc`)。
