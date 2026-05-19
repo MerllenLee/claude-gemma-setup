@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# Claude Code -> Gemma 4 Setup Script (Enterprise v2.4)
+# Claude Code -> Gemma 4 Setup Script (Enterprise v2.5)
 # Description: Configures Claude Code to use Gemma 4 via Claude Code Router (CCR)
 # ==============================================================================
 
@@ -14,11 +14,27 @@ echo -e "${GREEN}===============================================================
 echo -e "${GREEN}     🚀 Claude Code -> Gemma 4 One-Click Setup Tool ${NC}"
 echo -e "${GREEN}================================================================${NC}"
 
+# 0. Node.js Version Check
+echo -e "\n${YELLOW}Step 0: Environment Check${NC}"
+NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
+if [[ -z "$NODE_VERSION" || "$NODE_VERSION" -lt 20 ]]; then
+    echo -e "${YELLOW}⚠️  Warning: Your Node.js version is below v20.0.0.${NC}"
+    echo -e "The tool is optimized for Node.js v20+. While it may work on older versions,"
+    echo -e "you might encounter stability issues or unexpected crashes."
+    echo -n "Do you want to proceed anyway? [Y/n]: "
+    read PROCEED < /dev/tty
+    if [[ "$PROCEED" == "n" || "$PROCEED" == "N" ]]; then
+        echo -e "${RED}❌ Installation aborted. Please upgrade Node.js to v20+ and try again.${NC}"
+        exit 1
+    fi
+fi
+echo -e "✅ Environment check passed."
+
 # 1. Interactive API Key Acquisition
 echo -e "\n${YELLOW}Step 1: Authentication${NC}"
 while [[ -z "$MY_API_KEY" ]]; do
     echo -n "🔑 Please enter your Google AI Studio API Key: "
-    read MY_API_KEY
+    read MY_API_KEY < /dev/tty
     if [[ -z "$MY_API_KEY" ]]; then
         echo -e "${RED}❌ Error: API Key cannot be empty. Please try again!${NC}"
     fi
@@ -29,7 +45,7 @@ echo -e "\n${YELLOW}Step 2: Model Selection${NC}"
 echo "Please select the model version you wish to use:"
 echo "1) Gemma-4-31B-IT (Powerful, Recommended)"
 echo "2) Gemma-4-26B-A4B-IT (Faster, Lightweight)"
-read -p "Enter choice [1 or 2]: " MODEL_CHOICE
+read -p "Enter choice [1 or 2]: " MODEL_CHOICE < /dev/tty
 
 if [[ "$MODEL_CHOICE" == "2" ]]; then
     MY_MODEL="models/gemma-4-26b-a4b-it"
@@ -39,16 +55,14 @@ else
     echo -e "✅ Selected: ${GREEN}Gemma-4-31B${NC}"
 fi
 
-# 3. Install Necessary Tools (Sudo-aware & Completely Silenced)
+# 3. Install Necessary Tools (Sudo-aware & Silenced)
 echo -e "\n${YELLOW}Step 3: Installing Tools${NC}"
 echo "Installing @anthropic-ai/claude-code and @musistudio/claude-code-router..."
 
-# Attempt normal installation, silence all stderr
 npm install -g --engine-strict=false --no-fund --no-audit @anthropic-ai/claude-code @musistudio/claude-code-router 2>/dev/null
 
 if [ $? -ne 0 ]; then
     echo -e "${YELLOW}ℹ️ Normal installation failed. Requesting sudo privileges...${NC}"
-    # ALSO silence stderr for sudo installation to remove EBADENGINE warnings
     sudo npm install -g --engine-strict=false --no-fund --no-audit @anthropic-ai/claude-code @musistudio/claude-code-router 2>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "${RED}❌ Installation failed even with sudo.${NC}"
