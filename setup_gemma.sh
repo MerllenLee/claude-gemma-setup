@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# Claude Code -> Gemma 4 Setup Script (Enterprise v2.5)
+# Claude Code -> Gemma 4 Setup Script (Enterprise v2.6)
 # Description: Configures Claude Code to use Gemma 4 via Claude Code Router (CCR)
 # ==============================================================================
 
@@ -13,22 +13,6 @@ NC='\033[0m'
 echo -e "${GREEN}================================================================${NC}"
 echo -e "${GREEN}     🚀 Claude Code -> Gemma 4 One-Click Setup Tool ${NC}"
 echo -e "${GREEN}================================================================${NC}"
-
-# 0. Node.js Version Check
-echo -e "\n${YELLOW}Step 0: Environment Check${NC}"
-NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
-if [[ -z "$NODE_VERSION" || "$NODE_VERSION" -lt 20 ]]; then
-    echo -e "${YELLOW}⚠️  Warning: Your Node.js version is below v20.0.0.${NC}"
-    echo -e "The tool is optimized for Node.js v20+. While it may work on older versions,"
-    echo -e "you might encounter stability issues or unexpected crashes."
-    echo -n "Do you want to proceed anyway? [Y/n]: "
-    read PROCEED < /dev/tty
-    if [[ "$PROCEED" == "n" || "$PROCEED" == "N" ]]; then
-        echo -e "${RED}❌ Installation aborted. Please upgrade Node.js to v20+ and try again.${NC}"
-        exit 1
-    fi
-fi
-echo -e "✅ Environment check passed."
 
 # 1. Interactive API Key Acquisition
 echo -e "\n${YELLOW}Step 1: Authentication${NC}"
@@ -102,7 +86,7 @@ cat <<EOF > "$CONFIG_FILE"
 EOF
 echo -e "✅ Config file written to: ${GREEN}$CONFIG_FILE${NC}"
 
-# 5. Setup Shell Environment Variables
+# 5. Setup Shell Environment Variables (Forcing Bypass of Login Screen)
 echo -e "\n${YELLOW}Step 5: Configuring Shell Environment${NC}"
 SHELL_CONFIG=""
 if [[ "$SHELL" == *"zsh"* ]]; then
@@ -115,9 +99,16 @@ else
 fi
 
 if [ -n "$SHELL_CONFIG" ]; then
+    # 1. Force Base URL to Local Proxy
     if ! grep -q "ANTHROPIC_BASE_URL" "$SHELL_CONFIG"; then
         echo 'export ANTHROPIC_BASE_URL="http://localhost:4000"' >> "$SHELL_CONFIG"
         echo -e "✅ Added ANTHROPIC_BASE_URL to ${GREEN}$SHELL_CONFIG${NC}"
+    fi
+    
+    # 2. Inject Dummy API Key to bypass login screen entirely
+    if ! grep -q "ANTHROPIC_API_KEY" "$SHELL_CONFIG"; then
+        echo 'export ANTHROPIC_API_KEY="sk-ant-api03-dummy-key-12345"' >> "$SHELL_CONFIG"
+        echo -e "✅ Added ANTHROPIC_API_KEY to ${GREEN}$SHELL_CONFIG${NC}"
     fi
     
     if ! grep -q "ccr activate" "$SHELL_CONFIG"; then
@@ -131,11 +122,10 @@ fi
 # 6. Activate Immediately
 echo -e "\n${YELLOW}Step 6: Activating Environment${NC}"
 export ANTHROPIC_BASE_URL="http://localhost:4000"
+export ANTHROPIC_API_KEY="sk-ant-api03-dummy-key-12345"
 eval "$(ccr activate)"
 
 echo -e "\n${GREEN}================================================================${NC}"
 echo -e "${GREEN}🎉 Setup Complete! You can now just type 'claude' to start!${NC}"
 echo -e "${GREEN}================================================================${NC}"
-echo -e "${YELLOW}⚠️ IMPORTANT: When Claude asks for an API Key, please enter:${NC}"
-echo -e "${GREEN}sk-ant-api03-dummy-key-12345${NC}"
-echo -e "${YELLOW}This will ensure the tool skips official verification and uses your local router.${NC}"
+echo -e "${YELLOW}🚀 The login screen has been bypassed automatically.${NC}"
