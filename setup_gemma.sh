@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# Claude Code -> Gemma 4 Setup Script (Enterprise v2.7)
+# Claude Code -> Gemma 4 Setup Script (Enterprise v2.8)
 # Description: Configures Claude Code to use Gemma 4 via Claude Code Router (CCR)
 # ==============================================================================
 
@@ -99,9 +99,10 @@ else
 fi
 
 if [ -n "$SHELL_CONFIG" ]; then
+    # Updated to port 3456 based on CCR default status
     if ! grep -q "ANTHROPIC_BASE_URL" "$SHELL_CONFIG"; then
-        echo 'export ANTHROPIC_BASE_URL="http://localhost:4000"' >> "$SHELL_CONFIG"
-        echo -e "✅ Added ANTHROPIC_BASE_URL to ${GREEN}$SHELL_CONFIG${NC}"
+        echo 'export ANTHROPIC_BASE_URL="http://localhost:3456"' >> "$SHELL_CONFIG"
+        echo -e "✅ Added ANTHROPIC_BASE_URL (Port 3456) to ${GREEN}$SHELL_CONFIG${NC}"
     fi
     
     if ! grep -q "ccr activate" "$SHELL_CONFIG"; then
@@ -112,25 +113,24 @@ else
     echo -e "${RED}⚠️ Could not find a suitable shell config file.${NC}"
 fi
 
-# 6. Background Startup of CCR (The Secret Sauce)
+# 6. Background Startup of CCR
 echo -e "\n${YELLOW}Step 6: Starting Background Proxy...${NC}"
-# Check if port 4000 is already in use
-if lsof -i :4000 >/dev/null 2>&1; then
-    echo -e "ℹ️ Proxy is already running on port 4000. Skipping start."
+if lsof -i :3456 >/dev/null 2>&1; then
+    echo -e "ℹ️ Proxy is already running on port 3456. Skipping start."
 else
     echo -e "Starting Claude Code Router in background..."
     nohup ccr start > "$HOME/.claude-code-router/ccr.log" 2>&1 &
-    sleep 2 # Give it a moment to spin up
+    sleep 2
     echo -e "✅ Proxy started in background."
 fi
 
-# 7. Activate Environment for current session
+# 7. Activate Immediately
 echo -e "\n${YELLOW}Step 7: Activating Environment${NC}"
-export ANTHROPIC_BASE_URL="http://localhost:4000"
+export ANTHROPIC_BASE_URL="http://localhost:3456"
 export ANTHROPIC_API_KEY="sk-ant-api03-dummy-key-12345"
 eval "$(ccr activate)"
 
 echo -e "\n${GREEN}================================================================${NC}"
 echo -e "${GREEN}🎉 Setup Complete! You can now just type 'claude' to start!${NC}"
 echo -e "${GREEN}================================================================${NC}"
-echo -e "${YELLOW}🚀 Everything is running in the background. Enjoy Gemma 4!${NC}"
+echo -e "${YELLOW}🚀 Everything is running on port 3456. Enjoy Gemma 4!${NC}"
