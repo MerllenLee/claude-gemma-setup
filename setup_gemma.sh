@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# Claude Code -> Gemma 4 Setup Script (Enterprise v2.6)
+# Claude Code -> Gemma 4 Setup Script (Enterprise v2.7)
 # Description: Configures Claude Code to use Gemma 4 via Claude Code Router (CCR)
 # ==============================================================================
 
@@ -86,7 +86,7 @@ cat <<EOF > "$CONFIG_FILE"
 EOF
 echo -e "✅ Config file written to: ${GREEN}$CONFIG_FILE${NC}"
 
-# 5. Setup Shell Environment Variables (Forcing Bypass of Login Screen)
+# 5. Setup Shell Environment Variables
 echo -e "\n${YELLOW}Step 5: Configuring Shell Environment${NC}"
 SHELL_CONFIG=""
 if [[ "$SHELL" == *"zsh"* ]]; then
@@ -99,16 +99,9 @@ else
 fi
 
 if [ -n "$SHELL_CONFIG" ]; then
-    # 1. Force Base URL to Local Proxy
     if ! grep -q "ANTHROPIC_BASE_URL" "$SHELL_CONFIG"; then
         echo 'export ANTHROPIC_BASE_URL="http://localhost:4000"' >> "$SHELL_CONFIG"
         echo -e "✅ Added ANTHROPIC_BASE_URL to ${GREEN}$SHELL_CONFIG${NC}"
-    fi
-    
-    # 2. Inject Dummy API Key to bypass login screen entirely
-    if ! grep -q "ANTHROPIC_API_KEY" "$SHELL_CONFIG"; then
-        echo 'export ANTHROPIC_API_KEY="sk-ant-api03-dummy-key-12345"' >> "$SHELL_CONFIG"
-        echo -e "✅ Added ANTHROPIC_API_KEY to ${GREEN}$SHELL_CONFIG${NC}"
     fi
     
     if ! grep -q "ccr activate" "$SHELL_CONFIG"; then
@@ -119,8 +112,20 @@ else
     echo -e "${RED}⚠️ Could not find a suitable shell config file.${NC}"
 fi
 
-# 6. Activate Immediately
-echo -e "\n${YELLOW}Step 6: Activating Environment${NC}"
+# 6. Background Startup of CCR (The Secret Sauce)
+echo -e "\n${YELLOW}Step 6: Starting Background Proxy...${NC}"
+# Check if port 4000 is already in use
+if lsof -i :4000 >/dev/null 2>&1; then
+    echo -e "ℹ️ Proxy is already running on port 4000. Skipping start."
+else
+    echo -e "Starting Claude Code Router in background..."
+    nohup ccr start > "$HOME/.claude-code-router/ccr.log" 2>&1 &
+    sleep 2 # Give it a moment to spin up
+    echo -e "✅ Proxy started in background."
+fi
+
+# 7. Activate Environment for current session
+echo -e "\n${YELLOW}Step 7: Activating Environment${NC}"
 export ANTHROPIC_BASE_URL="http://localhost:4000"
 export ANTHROPIC_API_KEY="sk-ant-api03-dummy-key-12345"
 eval "$(ccr activate)"
@@ -128,4 +133,4 @@ eval "$(ccr activate)"
 echo -e "\n${GREEN}================================================================${NC}"
 echo -e "${GREEN}🎉 Setup Complete! You can now just type 'claude' to start!${NC}"
 echo -e "${GREEN}================================================================${NC}"
-echo -e "${YELLOW}🚀 The login screen has been bypassed automatically.${NC}"
+echo -e "${YELLOW}🚀 Everything is running in the background. Enjoy Gemma 4!${NC}"
