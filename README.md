@@ -35,10 +35,10 @@ npm -v
 
 ## ⚡ 快速安裝 (推薦)
 
-如果你已經完成上述準備，可以直接在終端機執行以下指令一鍵完成所有配置：
+為了確保互動式輸入能正常運作，請直接在終端機執行以下組合指令：
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/setup_gemma.sh | bash
+curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/setup_gemma.sh -o setup_gemma.sh && chmod +x setup_gemma.sh && ./setup_gemma.sh
 ```
 
 ---
@@ -54,7 +54,7 @@ curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/s
 打開終端機 (Terminal)，切換到腳本所在目錄，執行以下指令：
 
 ```bash
-# 1. 給予執行權限
+# 1. 給予執行權權
 chmod +x setup_gemma.sh
 
 # 2. 以「普通使用者」身份啟動安裝程式 (請勿使用 sudo 啟動整個腳本)
@@ -93,7 +93,7 @@ claude
 ## ❓ 常見問題 (FAQ)
 
 **Q: 我可以直接用 `sudo ./setup_gemma.sh` 執行嗎？**
-A: **強烈不建議！** 請以普通使用者身份執行。腳本內部會根據需要自動請求 `sudo` 權限來安裝工具，這樣可以確保你的設定檔擁有權正確，避免後續出現 `Permission Denied` 錯誤。
+A: **強烈不建議！** 請以普通使用者身份執行。腳本內部會根據需要自動請求 `sudo` 權限來安裝工具，這樣可以確保你的設定檔擁有權正確，避免後後出現 `Permission Denied` 錯誤。
 
 **Q: 我需要重新啟動終端機嗎？**
 A: 不需要。腳本最後會自動激活環境。如果你開啟新的視窗發現 `claude` 指令失效，請執行 `source ~/.zshrc` (或 `.bashrc`)。
