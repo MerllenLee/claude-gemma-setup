@@ -58,7 +58,7 @@ curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/s
 如果你希望先檢查腳本內容再安裝，請參考以下步驟：
 
 ### Step 1: 獲取安裝腳本
-下載 `setup_gemma.sh` 檔案，並將其放置在你的家目錄或任何方便的資料夾中。
+下載 `setup_//setup_gemma.sh` 檔案，並將其放置在你的家目錄或任何方便的資料夾中。
 
 ### Step 2: 執行安裝指令
 打開終端機 (Terminal)，切換到腳本所在目錄，執行以下指令：
@@ -68,7 +68,7 @@ curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/s
 chmod +x setup_gemma.sh
 
 # 2. 以「普通使用者」身份啟動安裝程式 (請勿使用 sudo 啟動整個腳本)
-./setup_//setup_gemma.sh
+./setup_gemma.sh
 ```
 
 ### Step 3: 跟隨互動提示
@@ -89,15 +89,9 @@ chmod +x setup_gemma.sh
 claude
 ```
 
-### 🔑 關鍵設定：跳過官方驗證
-啟動 `claude` 後，系統會要求你登入。**請務必按照以下步驟操作以連接到本地代理：**
-
-1. **選擇登入方式**：選擇 `2. Anthropic Console account · API usage billing`。
-2. **輸入 API Key**：請輸入下方的 **Dummy Key** (偽裝金鑰) 即可直接進入：
-   **`sk-ant-api03-dummy-key-12345`**
-   *(註：此 Key 僅用於欺騙客戶端檢查，實際請求將由本地 Router 使用你的 Google Key 處理)*
-
 ### ⚠️ 重要注意事項：
+- **自動跳過登入**：
+  本安裝腳本已自動配置環境變數，你應該可以直接進入對話介面，而不會看到 `Select login method` 登入畫面。
 - **首次啟動信任檢查**：
   當你第一次在某個專案資料夾啟動 `claude` 時，它會詢問：
   `Quick safety check: Is this a project you created...`
