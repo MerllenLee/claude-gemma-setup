@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# Claude Code -> Gemma 4 Setup Script (Enterprise v2.3)
+# Claude Code -> Gemma 4 Setup Script (Enterprise v2.4)
 # Description: Configures Claude Code to use Gemma 4 via Claude Code Router (CCR)
 # ==============================================================================
 
@@ -39,17 +39,17 @@ else
     echo -e "✅ Selected: ${GREEN}Gemma-4-31B${NC}"
 fi
 
-# 3. Install Necessary Tools (Sudo-aware & Warning-suppressed)
+# 3. Install Necessary Tools (Sudo-aware & Completely Silenced)
 echo -e "\n${YELLOW}Step 3: Installing Tools${NC}"
 echo "Installing @anthropic-ai/claude-code and @musistudio/claude-code-router..."
 
-# Use --engine-strict=false to suppress Node.js version warnings
-# Use --no-fund and --no-audit to reduce output noise
+# Attempt normal installation, silence all stderr
 npm install -g --engine-strict=false --no-fund --no-audit @anthropic-ai/claude-code @musistudio/claude-code-router 2>/dev/null
 
 if [ $? -ne 0 ]; then
     echo -e "${YELLOW}ℹ️ Normal installation failed. Requesting sudo privileges...${NC}"
-    sudo npm install -g --engine-strict=false --no-fund --no-audit @anthropic-ai/claude-code @musistudio/claude-code-router
+    # ALSO silence stderr for sudo installation to remove EBADENGINE warnings
+    sudo npm install -g --engine-strict=false --no-fund --no-audit @anthropic-ai/claude-code @musistudio/claude-code-router 2>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "${RED}❌ Installation failed even with sudo.${NC}"
         exit 1
