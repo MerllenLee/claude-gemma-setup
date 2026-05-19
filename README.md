@@ -12,16 +12,6 @@
 
 ---
 
-## ⚡ 快速安裝 (推薦)
-
-如果你想跳過手動下載，直接在終端機執行以下指令即可一鍵完成所有配置：
-
-```bash
-curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/setup_gemma.sh | bash
-```
-
----
-
 ## 📋 安裝前準備
 
 在執行腳本之前，請確保你已完成以下準備：
@@ -40,6 +30,16 @@ npm -v
 2. 登入你的 Google 帳號。
 3. 點擊左側的 **"Get API key"** $\rightarrow$ **"Create API key in new project"**。
 4. **複製並妥善保存此 Key**，在執行安裝腳本時會用到。
+
+---
+
+## ⚡ 快速安裝 (推薦)
+
+如果你已經完成上述準備，可以直接在終端機執行以下指令一鍵完成所有配置：
+
+```bash
+curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/setup_gemma.sh | bash
+```
 
 ---
 
