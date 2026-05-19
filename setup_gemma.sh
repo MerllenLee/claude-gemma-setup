@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# Claude Code -> Gemma 4 Setup Script (Enterprise Version)
+# Claude Code -> Gemma 4 Setup Script (Enterprise v2.3)
 # Description: Configures Claude Code to use Gemma 4 via Claude Code Router (CCR)
 # ==============================================================================
 
@@ -39,24 +39,25 @@ else
     echo -e "✅ Selected: ${GREEN}Gemma-4-31B${NC}"
 fi
 
-# 3. Install Necessary Tools (Sudo-aware)
+# 3. Install Necessary Tools (Sudo-aware & Warning-suppressed)
 echo -e "\n${YELLOW}Step 3: Installing Tools${NC}"
 echo "Installing @anthropic-ai/claude-code and @musistudio/claude-code-router..."
 
-# First attempt: Install as normal user
-npm install -g @anthropic-ai/claude-code @musistudio/claude-code-router 2>/dev/null
+# Use --engine-strict=false to suppress Node.js version warnings
+# Use --no-fund and --no-audit to reduce output noise
+npm install -g --engine-strict=false --no-fund --no-audit @anthropic-ai/claude-code @musistudio/claude-code-router 2>/dev/null
 
 if [ $? -ne 0 ]; then
-    echo -e "${YELLOW}ℹ️ Normal installation failed. Requesting sudo privileges for global npm install...${NC}"
-    sudo npm install -g @anthropic-ai/claude-code @musistudio/claude-code-router
+    echo -e "${YELLOW}ℹ️ Normal installation failed. Requesting sudo privileges...${NC}"
+    sudo npm install -g --engine-strict=false --no-fund --no-audit @anthropic-ai/claude-code @musistudio/claude-code-router
     if [ $? -ne 0 ]; then
-        echo -e "${RED}❌ Installation failed even with sudo. Please check your npm permissions.${NC}"
+        echo -e "${RED}❌ Installation failed even with sudo.${NC}"
         exit 1
     fi
 fi
 echo -e "✅ Tools installed successfully."
 
-# 4. Create Config Directory and Write JSON (Strictly as current user)
+# 4. Create Config Directory and Write JSON
 echo -e "\n${YELLOW}Step 4: Writing Configuration${NC}"
 CONFIG_DIR="$HOME/.claude-code-router"
 CONFIG_FILE="$CONFIG_DIR/config.json"
@@ -87,7 +88,7 @@ cat <<EOF > "$CONFIG_FILE"
 EOF
 echo -e "✅ Config file written to: ${GREEN}$CONFIG_FILE${NC}"
 
-# 5. Setup Shell Environment Variables (Strictly as current user)
+# 5. Setup Shell Environment Variables
 echo -e "\n${YELLOW}Step 5: Configuring Shell Environment${NC}"
 SHELL_CONFIG=""
 if [[ "$SHELL" == *"zsh"* ]]; then
@@ -100,11 +101,14 @@ else
 fi
 
 if [ -n "$SHELL_CONFIG" ]; then
+    if ! grep -q "ANTHROPIC_BASE_URL" "$SHELL_CONFIG"; then
+        echo 'export ANTHROPIC_BASE_URL="http://localhost:4000"' >> "$SHELL_CONFIG"
+        echo -e "✅ Added ANTHROPIC_BASE_URL to ${GREEN}$SHELL_CONFIG${NC}"
+    fi
+    
     if ! grep -q "ccr activate" "$SHELL_CONFIG"; then
         echo 'eval "$(ccr activate)"' >> "$SHELL_CONFIG"
-        echo -e "✅ Added activation command to ${GREEN}$SHELL_CONFIG${NC}"
-    else
-        echo -e "ℹ️ Environment variable already exists. Skipping."
+        echo -e "✅ Added ccr activation to ${GREEN}$SHELL_CONFIG${NC}"
     fi
 else
     echo -e "${RED}⚠️ Could not find a suitable shell config file.${NC}"
@@ -112,8 +116,12 @@ fi
 
 # 6. Activate Immediately
 echo -e "\n${YELLOW}Step 6: Activating Environment${NC}"
+export ANTHROPIC_BASE_URL="http://localhost:4000"
 eval "$(ccr activate)"
 
 echo -e "\n${GREEN}================================================================${NC}"
 echo -e "${GREEN}🎉 Setup Complete! You can now just type 'claude' to start!${NC}"
 echo -e "${GREEN}================================================================${NC}"
+echo -e "${YELLOW}⚠️ IMPORTANT: When Claude asks for an API Key, please enter:${NC}"
+echo -e "${GREEN}sk-ant-api03-dummy-key-12345${NC}"
+echo -e "${YELLOW}This will ensure the tool skips official verification and uses your local router.${NC}"
