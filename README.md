@@ -68,7 +68,7 @@ curl -sSL https://raw.githubusercontent.com/MerllenLee/claude-gemma-setup/main/s
 chmod +x setup_gemma.sh
 
 # 2. 以「普通使用者」身份啟動安裝程式 (請勿使用 sudo 啟動整個腳本)
-./setup_gemma.sh
+./setup_//setup_gemma.sh
 ```
 
 ### Step 3: 跟隨互動提示
@@ -88,6 +88,14 @@ chmod +x setup_gemma.sh
 ```bash
 claude
 ```
+
+### 🔑 關鍵設定：跳過官方驗證
+啟動 `claude` 後，系統會要求你登入。**請務必按照以下步驟操作以連接到本地代理：**
+
+1. **選擇登入方式**：選擇 `2. Anthropic Console account · API usage billing`。
+2. **輸入 API Key**：請輸入下方的 **Dummy Key** (偽裝金鑰) 即可直接進入：
+   **`sk-ant-api03-dummy-key-12345`**
+   *(註：此 Key 僅用於欺騙客戶端檢查，實際請求將由本地 Router 使用你的 Google Key 處理)*
 
 ### ⚠️ 重要注意事項：
 - **首次啟動信任檢查**：
